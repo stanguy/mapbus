@@ -1,0 +1,50 @@
+{
+  "0": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "name": "Brunch-with-Whey-Protein",
+  "version": "0.0.1",
+  "main": "public/js/app.js",
+  "dependencies": {
+    "jquery": "~2.1.0",
+    "foundation": "zurb/bower-foundation#~5.4.7",
+    "bourbon": "~4.2.0",
+    "leaflet": "~0.7.3",
+    "sidebar-v2": "~0.2.1",
+    "leaflet-providers": "~1.0.16",
+    "leaflet.markerclusterer": "~0.4.0",
+    "Leaflet.encoded": "~0.0.5"
+  },
+  "overrides": {
+    "foundation": {
+      "main": [
+        "js/foundation.js"
+      ]
+    },
+    "modernizr": {
+      "main": [
+        "modernizr.js"
+      ]
+    },
+    "leaflet.markerclusterer": {
+      "main": [
+        "dist/leaflet.markercluster-src.js",
+        "dist/MarkerCluster.css",
+        "dist/MarkerCluster.Default.css"
+      ]
+    },
+    "leaflet": {
+      "main": [
+        "dist/leaflet.css",
+        "dist/leaflet-src.js",
+        "dist/images/layers-2x.png",
+        "dist/images/layers.png",
+        "dist/images/marker-icon-2x.png",
+        "dist/images/marker-icon.png",
+        "dist/images/marker-shadow.png"
+      ]
+    }
+  }
+}
