@@ -7,6 +7,7 @@ class MapHandler {
         L.Icon.Default.imagePath = "/images/";
         this.map = L.map('map');
         this.lineLayers = [];
+        this.stop = null;
         this.map.setView([51.2, 7], 9);
         
         var layer = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg', {
@@ -64,9 +65,14 @@ class MapHandler {
             this.refreshSelectedLines();
         });
     }
-
+    
     markerClick(marker) {
-        var members = marker.stop.Members;
+        var stop = marker.stop;
+        this.stop = stop;
+        this.updateStop(stop);
+    }
+    updateStop(stop) {
+        var members = stop.Members;
         var stop_ids = [];
         for( var i = 0; i < members.length; ++i) {
             stop_ids.push( members[i].Id );
@@ -93,7 +99,7 @@ class MapHandler {
             }
             
             var t = AppTemplates['times'];            
-            var content = t({ stopline: data, stop: marker.stop.Name});
+            var content = t({ stopline: data, stop: stop.Name});
             $('#times').html( content );
             L.control.sidebar('sidebar').open('times');
 
@@ -135,6 +141,9 @@ class MapHandler {
             }
             return false;
         });
+        if ( this.stop ) {
+            this.updateStop(this.stop);
+        }
     }
 
     refreshStops( filter ) {
