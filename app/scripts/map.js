@@ -1,4 +1,12 @@
 
+Number.prototype.zeroPadded = function() {
+    var prefix = "";
+    if ( this < 10 ) {
+        prefix = "0";
+    }
+    return prefix + this;
+}
+
 class MapHandler {
     constructor() {
 
@@ -45,7 +53,7 @@ class MapHandler {
 
         Handlebars.registerHelper( 'date_to_time', (dt) => {
             var d = new Date(dt);
-            return d.toLocaleFormat( "%H:%M" );
+            return d.getHours().zeroPadded() + ":" + d.getMinutes().zeroPadded();
         });
 
         Handlebars.registerHelper( 'route_name', (id) => {
