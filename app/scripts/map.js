@@ -126,6 +126,11 @@ class MapHandler {
             this.map.removeLayer(this.lineLayers[i]);
         }
         this.map.lineLayers = [];
+
+        if ( 0 == selected_lines.length ) {
+            this.refreshStops();
+            return;
+        }
         
         for( var i = 0; i < selected_lines.length; ++i ) {
             var line = this.lines[selected_lines[i]];
