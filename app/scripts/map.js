@@ -5,7 +5,7 @@ Number.prototype.zeroPadded = function() {
         prefix = "0";
     }
     return prefix + this;
-}
+};
 
 class MapHandler {
     constructor() {
