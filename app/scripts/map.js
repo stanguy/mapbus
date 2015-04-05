@@ -138,11 +138,13 @@ class MapHandler {
             for( let j = 0; j < line.Stops.length; ++j ) {
                 accepted_stops[line.Stops[j]] = true;
             }
-            for( let j = 0; j < line.Lines.length; ++j ) {
-                const path = line.Lines[j];
-                const poly = L.Polyline.fromEncoded( path, lineOptions );
-                poly.addTo( this.map );
-                this.lineLayers.push(poly);
+            if ( line.Lines ) {
+                for( let j = 0; j < line.Lines.length; ++j ) {
+                    const path = line.Lines[j];
+                    const poly = L.Polyline.fromEncoded( path, lineOptions );
+                    poly.addTo( this.map );
+                    this.lineLayers.push(poly);
+                }
             }
         }
         this.refreshStops( (s) => {
