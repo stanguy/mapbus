@@ -3,6 +3,8 @@
 @import "../../bower_components/sidebar-v2/scss/leaflet-sidebar";
 @import "bourbon";
 
+@import "markers";
+@import "fix-awesomemarkers";
 //Your Custom Styles bellow
 
 html, body {

@@ -1,4 +1,6 @@
 
+const AUTOMATIC_REFRESH_DELAY = 10 * 1000;
+
 Number.prototype.zeroPadded = function() {
     let prefix = "";
     if ( this < 10 ) {
@@ -9,26 +11,42 @@ Number.prototype.zeroPadded = function() {
 
 class MapHandler {
     constructor() {
+        L.Icon.Default.imagePath = "/images/";
+        L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
 
         this.api = new KeolisApi($('body').data('keolis-key'));
+        this.explore = new ExploreApi();
+        this.selectedLines = [];
+        this.selectedStop = null;
 
-        L.Icon.Default.imagePath = "/images/";
         this.map = L.map('map');
         this.lineLayers = [];
-        this.stop = null;
         this.map.setView([51.2, 7], 9);
         
+        this.markers = L.markerClusterGroup({
+            disableClusteringAtZoom: 16
+        });
+        this.busMarkers = L.markerClusterGroup({
+            disableClusteringAtZoom: 12,
+            iconCreateFunction: (cluster) =>  {
+                const icon = this.busMarkers._defaultIconCreateFunction(cluster);
+                icon.options.className += " bus";
+                return icon;
+            }
+        });
+        this.timeout = setInterval(
+            () => this.timerExpires(),
+            AUTOMATIC_REFRESH_DELAY
+        );
+
+        
+        const sidebar = L.control.sidebar('sidebar').addTo(this.map);
         const layer = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg', {
 	    attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 	    subdomains: '1234'
         });
         layer.addTo(this.map);
-        
-        const sidebar = L.control.sidebar('sidebar').addTo(this.map);
-        this.markers = L.markerClusterGroup({
-            disableClusteringAtZoom: 16
-        });
-        
+
         $.getJSON( "/data.json", data => {
             this.stops = data.Stops;
             this.lines = data.Routes;
@@ -37,7 +55,6 @@ class MapHandler {
 
         this.api.getLines()
             .then( lines => {
-
                 const pictos_by_name = {};
                 for ( var i = 0; i < lines.length; ++i ) {
                     var line = lines[i];
@@ -67,31 +84,46 @@ class MapHandler {
             return id;
         });
 
-        $(document.body).on( 'click', '.lines a', (e) => {
-            e.preventDefault();
-            $(e.currentTarget).toggleClass( 'selected' );
-            this.refreshSelectedLines();
-        });
+        $(document.body).on( 'click', '.lines a', e => this.lineClick(e) );
+    }
+
+    timerExpires() {
+        console.log("ping");
+        this.updateBuses();
+        this.updateStop();
     }
     
     markerClick(marker) {
         const stop = marker.stop;
-        this.stop = stop;
+        this.selectedStop = stop;
         this.updateStop(stop);
     }
-    updateStop(stop) {
-        const members = stop.Members;
+    
+    lineClick(e) {
+        e.preventDefault();
+        $(e.currentTarget).toggleClass( 'selected' );
+        this.selectedLines = $.map(
+            this.getSelectedLinesIndex(),
+            (idx) => this.lines[idx]
+        );
+        this.refreshSelectedLines();        
+        this.updateBuses();
+    }
+    updateStop() {
+        if ( null == this.selectedStop ) {
+            return;
+        }
+        const members = this.selectedStop.Members;
         const stop_ids = [];
         for( var i = 0; i < members.length; ++i) {
             stop_ids.push( members[i].Id );
         }
         this.api.getNextDepartures(stop_ids).then((data) => {
 
-            const selected_lines = this.getSelectedLinesIndex();
-            if ( selected_lines.length > 0 ) {
+            if ( this.selectedLines.length > 0 ) {
                 const selected_lines_ids = {};
-                for( var i = 0; i < selected_lines.length; ++i ) {
-                    selected_lines_ids[ this.lines[selected_lines[i]].Id ] = true;
+                for( var i = 0; i < this.selectedLines.length; ++i ) {
+                    selected_lines_ids[ this.selectedLines[i].Id ] = true;
                 }
                 const tmp_data = [];
                 for( let i = 0; i < data.length; ++i ) {
@@ -107,7 +139,7 @@ class MapHandler {
             }
             
             const t = AppTemplates['times'];            
-            const content = t({ stopline: data, stop: stop.Name});
+            const content = t({ stopline: data, stop: this.selectedStop.Name});
             $('#times').html( content );
             L.control.sidebar('sidebar').open('times');
 
@@ -119,7 +151,6 @@ class MapHandler {
     }
     
     refreshSelectedLines() {
-        const selected_lines = this.getSelectedLinesIndex();
         const accepted_stops = {};
 
         for( let i = 0; i < this.lineLayers.length; ++i ) {
@@ -127,13 +158,14 @@ class MapHandler {
         }
         this.map.lineLayers = [];
 
-        if ( 0 == selected_lines.length ) {
+        const number_of_lines = this.selectedLines.length;
+        if ( 0 == number_of_lines ) {
             this.refreshStops();
             return;
         }
-        
-        for( let i = 0; i < selected_lines.length; ++i ) {
-            const line = this.lines[selected_lines[i]];
+
+        for( let i = 0; i < number_of_lines; ++i ) {
+            const line = this.selectedLines[i];
             const lineOptions = { color: '#' + line.Colors[1] };
             for( let j = 0; j < line.Stops.length; ++j ) {
                 accepted_stops[line.Stops[j]] = true;
@@ -156,8 +188,8 @@ class MapHandler {
             }
             return false;
         });
-        if ( this.stop ) {
-            this.updateStop(this.stop);
+        if ( this.selectedStop ) {
+            this.updateStop();
         }
     }
 
@@ -185,5 +217,63 @@ class MapHandler {
         
         const bounds = this.markers.getBounds();
         this.map.panInsideBounds(bounds);
+    }
+    updateBuses() {
+        if ( 0 == this.selectedLines.length ) {
+            this.busMarkers.clearLayers();
+            return;
+        }
+        const short_names = $.map(
+            this.selectedLines,
+            (line) => line.Name
+        );
+        this.explore.getRealtimePositions(short_names).
+            then( bus => {
+                this.refreshBuses(bus);
+            });
+
+    }
+    refreshBuses(buses) {
+        this.busMarkers.clearLayers();
+        const bus_markers = [];
+        const total_buses = buses.length;
+        const busIcon = {
+            late: L.AwesomeMarkers.icon({
+                icon: 'bus',
+                markerColor: 'blue'
+            }),
+            ontime: L.AwesomeMarkers.icon({
+                icon: 'bus',
+                markerColor: 'green'
+            }),
+            early: L.AwesomeMarkers.icon({
+                icon: 'bus',
+                markerColor: 'violet'
+            })
+        };
+        for( let i = 0; i < total_buses; ++i ) {
+            const bus = buses[i];
+            const coords = bus.geometry.coordinates;
+
+            let icon = null;
+            if ( Math.abs( bus.fields.ecartsecondes ) < 30 ) {
+                icon = busIcon.ontime;
+            } else if ( bus.fields.ecartsecondes > 0 ) {
+                icon = busIcon.late;
+            } else {
+                icon = busIcon.early;
+            }
+            
+            const marker = L.marker( new L.LatLng( coords[1], coords[0] ),
+                                     { icon: icon } );
+            marker.bus = bus;
+            marker.on( 'click', e => {
+                console.log( e.target.bus );
+            });
+            bus_markers.push(marker);
+        }
+        console.log( "Adding " + bus_markers.length + " bus markers" );
+        this.busMarkers.addLayers( bus_markers );
+        this.map.addLayer(this.busMarkers);
     }
 }

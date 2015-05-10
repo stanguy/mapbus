@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Map Bus</title>
     <link rel="stylesheet" href="css/app.css?{!timestamp!}" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   </head>
   <body data-keolis-key="{!KEOLIS_API_KEY!}">
     <div id="sidebar" class="sidebar collapsed">
       <ul class="sidebar-tabs" role="tablist">
-        <li><a href="#home">H</a></li>
-        <li><a href="#times">T</a></li>
+        <li><a href="#home"><i class="fa fa-bus"></i></a></li>
+        <li><a href="#times"><i class="fa fa-clock-o"></i></a></li>
+        <li><a href="#detail"><i class="fa fa-dashboard"></i></a></li>
+        <li><a href="#info"><i class="fa fa-info-circle"></i></a></li>
       </ul>
       <div class="sidebar-content active">
         <div class="sidebar-pane" id="home"></div>
         <div class="sidebar-pane" id="times"></div>
+        <div class="sidebar-pane" id="detail"></div>
+        <div class="sidebar-pane" id="info">TBA</div>
       </div>
     </div>
     <div id="map" class="sidebar-map">
