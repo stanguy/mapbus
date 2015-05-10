@@ -18,6 +18,7 @@ class MapHandler {
         this.explore = new ExploreApi();
         this.selectedLines = [];
         this.selectedStop = null;
+        this.selectedBus = null;
 
         this.map = L.map('map');
         this.lineLayers = [];
@@ -109,6 +110,13 @@ class MapHandler {
         this.refreshSelectedLines();        
         this.updateBuses();
     }
+
+    busMarkerClick(bus) {
+        this.selectedBus = bus;
+        this.updateBusDetail();
+        L.control.sidebar('sidebar').open('detail');        
+    }
+    
     updateStop() {
         if ( null == this.selectedStop ) {
             return;
@@ -233,11 +241,23 @@ class MapHandler {
             });
 
     }
+    updateBusDetail() {
+        const t = AppTemplates['bus'];
+        let content = '';
+        if ( this.selectedBus ) {
+             content = t({ bus: this.selectedBus });
+        }
+        $('#detail').html( content );
+    }
     refreshBuses(buses) {
         this.busMarkers.clearLayers();
         const bus_markers = [];
         const total_buses = buses.length;
         const busIcon = {
+            solate: L.AwesomeMarkers.icon({
+                icon: 'bus',
+                markerColor: 'darkpurple'
+            }),
             late: L.AwesomeMarkers.icon({
                 icon: 'bus',
                 markerColor: 'blue'
@@ -246,20 +266,33 @@ class MapHandler {
                 icon: 'bus',
                 markerColor: 'green'
             }),
+            soveryearly: L.AwesomeMarkers.icon({
+                icon: 'bus',
+                markerColor: 'red'
+            }),
             early: L.AwesomeMarkers.icon({
                 icon: 'bus',
-                markerColor: 'violet'
+                markerColor: 'orange'
             })
         };
+        let new_selected_bus = null;
         for( let i = 0; i < total_buses; ++i ) {
             const bus = buses[i];
             const coords = bus.geometry.coordinates;
 
+            if ( null != this.selectedBus && this.selectedBus.fields.idbus == bus.fields.idbus ) {
+                new_selected_bus = bus;
+            }
+            
             let icon = null;
             if ( Math.abs( bus.fields.ecartsecondes ) < 30 ) {
                 icon = busIcon.ontime;
+            } else if ( bus.fields.ecartsecondes > 300 ) {
+                icon = busIcon.solate;
             } else if ( bus.fields.ecartsecondes > 0 ) {
                 icon = busIcon.late;
+            } else if ( bus.fields.ecartsecondes < 300 ){
+                icon = busIcon.soveryearly;
             } else {
                 icon = busIcon.early;
             }
@@ -268,10 +301,16 @@ class MapHandler {
                                      { icon: icon } );
             marker.bus = bus;
             marker.on( 'click', e => {
-                console.log( e.target.bus );
+                this.busMarkerClick( e.target.bus );
             });
             bus_markers.push(marker);
         }
+        if ( new_selected_bus ) {
+            this.selectedBus = new_selected_bus;
+        } else if ( this.selectedBus ) {
+            this.selectedBus = null;
+        }
+        this.updateBusDetail();
         console.log( "Adding " + bus_markers.length + " bus markers" );
         this.busMarkers.addLayers( bus_markers );
         this.map.addLayer(this.busMarkers);
