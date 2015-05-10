@@ -98,6 +98,7 @@ class MapHandler {
         const stop = marker.stop;
         this.selectedStop = stop;
         this.updateStop(stop);
+        L.control.sidebar('sidebar').open('times');
     }
     
     lineClick(e) {
@@ -149,8 +150,6 @@ class MapHandler {
             const t = AppTemplates['times'];            
             const content = t({ stopline: data, stop: this.selectedStop.Name});
             $('#times').html( content );
-            L.control.sidebar('sidebar').open('times');
-
         });
     }
 
