@@ -1,5 +1,5 @@
 
-const AUTOMATIC_REFRESH_DELAY = 10 * 1000;
+const AUTOMATIC_REFRESH_DELAY = 40 * 1000;
 
 Number.prototype.zeroPadded = function() {
     let prefix = "";
@@ -284,13 +284,13 @@ class MapHandler {
             }
             
             let icon = null;
-            if ( Math.abs( bus.fields.ecartsecondes ) < 30 ) {
+            if ( Math.abs( bus.fields.ecartsecondes ) < 50 ) {
                 icon = busIcon.ontime;
             } else if ( bus.fields.ecartsecondes > 300 ) {
                 icon = busIcon.solate;
             } else if ( bus.fields.ecartsecondes > 0 ) {
                 icon = busIcon.late;
-            } else if ( bus.fields.ecartsecondes < 300 ){
+            } else if ( bus.fields.ecartsecondes < -300 ){
                 icon = busIcon.soveryearly;
             } else {
                 icon = busIcon.early;
