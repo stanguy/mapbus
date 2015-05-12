@@ -1,0 +1,14 @@
+
+#home .lines {
+    a {
+        display: block;
+        float: left;
+        width: 45px;
+        height: 45px;
+        margin: 0.5rem 0.2rem;
+
+        &.selected {
+            border: 0.2rem solid #d80
+        }
+    }
+}

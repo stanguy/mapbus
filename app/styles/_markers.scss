@@ -4,24 +4,10 @@
     div {
         border-radius: 3px;
     }
-    &.marker-cluster-small {
-	background-color: rgba(131, 126, 140, 0.6);
+    &.marker-cluster-small, &.marker-cluster-medium, &.marker-cluster-large {
+	background-color: rgba(200, 170, 150, 0.6);
         div {
-	    background-color: rgba(90, 104, 28, 0.6);
-        }
-    }
-    
-    &.marker-cluster-medium {
-	background-color: rgba(241, 211, 87, 0.6);
-         div {
-	     background-color: rgba(240, 194, 12, 0.6);
-         }
-    }
-    
-    &.marker-cluster-large {
-        background-color: rgba(253, 156, 115, 0.6);
-        div {
-            background-color: rgba(241, 128, 23, 0.6);
+	    background-color: rgba(180, 170, 160, 0.6);
         }
     }
 }

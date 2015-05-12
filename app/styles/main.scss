@@ -7,6 +7,9 @@
 @import "fix-awesomemarkers";
 //Your Custom Styles bellow
 
+@import "lines";
+@import "times";
+
 html, body {
     margin: 0;
     height: 100%;
@@ -18,3 +21,5 @@ html, body {
     width: 100%;
     height: 100%;
 }
+
+.sidebar-tabs li a { font-size: 1.5rem; }
