@@ -81,7 +81,10 @@ class KeolisApi {
         const params = {
             cmd: 'getlines',
             version: '2.0',
-            key: this.key
+            key: this.key,
+            param: {
+                size: 100
+            }
         }; 
         return new Promise((resolve, reject) => {
             $.ajax( KEOLIS_JSON_BASE_URL, { data: params })
