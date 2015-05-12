@@ -3,7 +3,7 @@
     <h3>{{route_name route}} - {{headsign}}</h3>
     <div>
         {{#each departures.departure}}
-            <span{{#if accurate}}class="accurate"{{/if}}>{{date_to_time content}}</span>
+            <span{{#if accurate}} class="accurate"{{/if}}>{{date_to_time content}}</span>
         {{/each}}
     </div>
 {{/each}}
