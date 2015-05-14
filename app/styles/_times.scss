@@ -4,6 +4,9 @@
         span {
             display: inline-block;
             margin-right: 0.5rem;
+            font-style: italic;
+            
+            &.accurate { font-style: normal; }
         }
     }
 }
