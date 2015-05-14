@@ -24,7 +24,7 @@ class MapHandler {
         this.lineLayers = L.layerGroup();
         this.lineLayers.addTo(this.map);
         this.linesCache = {};
-        this.map.setView([51.2, 7], 9);
+        this.map.setView([48.11, -1.65], 12);
         
         this.markers = L.markerClusterGroup({
             disableClusteringAtZoom: 16
