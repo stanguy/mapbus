@@ -21,7 +21,9 @@ class MapHandler {
         this.selectedBus = null;
 
         this.map = L.map('map');
-        this.lineLayers = [];
+        this.lineLayers = L.layerGroup();
+        this.lineLayers.addTo(this.map);
+        this.linesCache = {};
         this.map.setView([51.2, 7], 9);
         
         this.markers = L.markerClusterGroup({
@@ -160,10 +162,7 @@ class MapHandler {
     refreshSelectedLines() {
         const accepted_stops = {};
 
-        for( let i = 0; i < this.lineLayers.length; ++i ) {
-            this.map.removeLayer(this.lineLayers[i]);
-        }
-        this.map.lineLayers = [];
+        this.lineLayers.clearLayers();
 
         const number_of_lines = this.selectedLines.length;
         if ( 0 == number_of_lines ) {
@@ -178,11 +177,17 @@ class MapHandler {
                 accepted_stops[line.Stops[j]] = true;
             }
             if ( line.Lines ) {
-                for( let j = 0; j < line.Lines.length; ++j ) {
-                    const path = line.Lines[j];
-                    const poly = L.Polyline.fromEncoded( path, lineOptions );
-                    poly.addTo( this.map );
-                    this.lineLayers.push(poly);
+                if ( undefined !== this.linesCache[line.Id] ) {
+                    this.lineLayers.addLayer(this.linesCache[line.Id]);
+                } else {
+                    const line_group = L.layerGroup();
+                    for( let j = 0; j < line.Lines.length; ++j ) {
+                        const path = line.Lines[j];
+                        const poly = L.Polyline.fromEncoded( path, lineOptions );
+                        line_group.addLayer(poly);
+                    }
+                    this.linesCache[line.Id] = line_group;
+                    this.lineLayers.addLayer(line_group);
                 }
             }
         }
