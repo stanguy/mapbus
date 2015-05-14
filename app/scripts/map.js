@@ -91,7 +91,6 @@ class MapHandler {
     }
 
     timerExpires() {
-        console.log("ping");
         this.updateBuses();
         this.updateStop();
     }
@@ -315,7 +314,6 @@ class MapHandler {
             this.selectedBus = null;
         }
         this.updateBusDetail();
-        console.log( "Adding " + bus_markers.length + " bus markers" );
         this.busMarkers.addLayers( bus_markers );
         this.map.addLayer(this.busMarkers);
     }
