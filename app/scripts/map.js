@@ -59,12 +59,12 @@ class MapHandler {
         this.api.getLines()
             .then( lines => {
                 const pictos_by_name = {};
-                for ( var i = 0; i < lines.length; ++i ) {
-                    var line = lines[i];
+                for ( let i = 0; i < lines.length; ++i ) {
+                    const line = lines[i];
                     pictos_by_name[line.name] = line.img;
                 }
-                for ( var i = 0; i < this.lines.length; ++i ) {
-                    let line = this.lines[i];
+                for ( let i = 0; i < this.lines.length; ++i ) {
+                    const line = this.lines[i];
                     line.img = pictos_by_name[line.Name];
                 }
                 let t = AppTemplates['lines'];
@@ -78,7 +78,7 @@ class MapHandler {
 
         Handlebars.registerHelper( 'route_name', (id) => {
             const max_lines = this.lines.length;
-            for( var i = 0; i < max_lines; ++i ) {
+            for( let i = 0; i < max_lines; ++i ) {
                 const line = this.lines[i];
                 if ( id == line.Id ) {
                     return line.Name;
@@ -126,14 +126,14 @@ class MapHandler {
         }
         const members = this.selectedStop.Members;
         const stop_ids = [];
-        for( var i = 0; i < members.length; ++i) {
+        for( let i = 0; i < members.length; ++i) {
             stop_ids.push( members[i].Id );
         }
         this.api.getNextDepartures(stop_ids).then((data) => {
 
             if ( this.selectedLines.length > 0 ) {
                 const selected_lines_ids = {};
-                for( var i = 0; i < this.selectedLines.length; ++i ) {
+                for( let i = 0; i < this.selectedLines.length; ++i ) {
                     selected_lines_ids[ this.selectedLines[i].Id ] = true;
                 }
                 const tmp_data = [];
