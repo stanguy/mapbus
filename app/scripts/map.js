@@ -164,41 +164,40 @@ class MapHandler {
         this.lineLayers.clearLayers();
 
         const number_of_lines = this.selectedLines.length;
-        if ( 0 == number_of_lines ) {
-            this.refreshStops();
-            return;
-        }
-
-        for( let i = 0; i < number_of_lines; ++i ) {
-            const line = this.selectedLines[i];
-            const lineOptions = { color: '#' + line.Colors[1] };
-            for( let j = 0; j < line.Stops.length; ++j ) {
-                accepted_stops[line.Stops[j]] = true;
-            }
-            if ( line.Lines ) {
-                if ( undefined !== this.linesCache[line.Id] ) {
-                    this.lineLayers.addLayer(this.linesCache[line.Id]);
-                } else {
-                    const line_group = L.layerGroup();
-                    for( let j = 0; j < line.Lines.length; ++j ) {
-                        const path = line.Lines[j];
-                        const poly = L.Polyline.fromEncoded( path, lineOptions );
-                        line_group.addLayer(poly);
+        let stops_filter = null;
+        if ( 0 < number_of_lines ) {
+            for( let i = 0; i < number_of_lines; ++i ) {
+                const line = this.selectedLines[i];
+                const lineOptions = { color: '#' + line.Colors[1] };
+                for( let j = 0; j < line.Stops.length; ++j ) {
+                    accepted_stops[line.Stops[j]] = true;
+                }
+                if ( line.Lines ) {
+                    if ( undefined !== this.linesCache[line.Id] ) {
+                        this.lineLayers.addLayer(this.linesCache[line.Id]);
+                    } else {
+                        const line_group = L.layerGroup();
+                        for( let j = 0; j < line.Lines.length; ++j ) {
+                            const path = line.Lines[j];
+                            const poly = L.Polyline.fromEncoded( path, lineOptions );
+                            line_group.addLayer(poly);
+                        }
+                        this.linesCache[line.Id] = line_group;
+                        this.lineLayers.addLayer(line_group);
                     }
-                    this.linesCache[line.Id] = line_group;
-                    this.lineLayers.addLayer(line_group);
                 }
             }
+            stops_filter =  (s) => {
+                for ( let i = 0; i < s.Members.length; ++i ) {
+                    const m = s.Members[i];
+                    if ( accepted_stops[m.Id] ) {
+                        return true;
+                    }
+                }
+                return false;
+            };
         }
-        this.refreshStops( (s) => {
-            for ( let i = 0; i < s.Members.length; ++i ) {
-                const m = s.Members[i];
-                if ( accepted_stops[m.Id] ) {
-                    return true;
-                }
-            }
-            return false;
-        });
+        this.refreshStops( stops_filter );
         if ( this.selectedStop ) {
             this.updateStop();
         }
