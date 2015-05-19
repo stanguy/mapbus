@@ -37,13 +37,13 @@ class MapHandler {
                 return icon;
             }
         });
+        this.sidebar = new Sidebar(this.map);
         this.timeout = setInterval(
             () => this.timerExpires(),
             AUTOMATIC_REFRESH_DELAY
         );
 
         
-        const sidebar = L.control.sidebar('sidebar').addTo(this.map);
         const layer = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg', {
 	    attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 	    subdomains: '1234'
@@ -67,8 +67,7 @@ class MapHandler {
                     const line = this.lines[i];
                     line.img = pictos_by_name[line.Name];
                 }
-                let t = AppTemplates['lines'];
-                $('#home').html(t({lines: this.lines}));
+                this.sidebar.setContent('lines', {lines: this.lines});
             });
 
         Handlebars.registerHelper( 'date_to_time', (dt) => {
@@ -98,8 +97,7 @@ class MapHandler {
     markerClick(marker) {
         const stop = marker.stop;
         this.selectedStop = stop;
-        this.updateStop(stop);
-        L.control.sidebar('sidebar').open('times');
+        this.updateStop(true);
     }
     
     lineClick(e) {
@@ -115,11 +113,10 @@ class MapHandler {
 
     busMarkerClick(bus) {
         this.selectedBus = bus;
-        this.updateBusDetail();
-        L.control.sidebar('sidebar').open('detail');        
+        this.updateBusDetail(true);
     }
     
-    updateStop() {
+    updateStop(interactive = false) {
         if ( null == this.selectedStop ) {
             return;
         }
@@ -147,10 +144,8 @@ class MapHandler {
             for( let i = 0; i < data.length; ++i ) {
                 data[i].headsign = data[i].departures.departure[0]['@attributes'].headsign;
             }
-            
-            const t = AppTemplates['times'];            
-            const content = t({ stopline: data, stop: this.selectedStop.Name});
-            $('#times').html( content );
+
+            this.sidebar.setContent( "times", { stopline: data, stop: this.selectedStop.Name}, interactive );
         });
     }
 
@@ -243,13 +238,8 @@ class MapHandler {
             });
 
     }
-    updateBusDetail() {
-        const t = AppTemplates['bus'];
-        let content = '';
-        if ( this.selectedBus ) {
-             content = t({ bus: this.selectedBus });
-        }
-        $('#detail').html( content );
+    updateBusDetail(interactive=false) {
+        this.sidebar.setContent( 'bus', { bus: this.selectedBus }, interactive );
     }
     refreshBuses(buses) {
         this.busMarkers.clearLayers();
