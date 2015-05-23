@@ -50,7 +50,7 @@ class MapHandler {
         });
         layer.addTo(this.map);
 
-        $.getJSON( "/data.json", data => {
+        getCachedData( data => {
             this.stops = data.Stops;
             this.lines = data.Routes;
             this.refreshStops();
