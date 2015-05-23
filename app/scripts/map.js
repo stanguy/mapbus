@@ -245,9 +245,10 @@ class MapHandler {
         }
         this.markers.addLayers( stop_markers );
         this.map.addLayer(this.markers);
-        
-        const bounds = this.markers.getBounds();
-        this.map.panInsideBounds(bounds);
+        if ( this.markers.hasLayer() ) {
+            const bounds = this.markers.getBounds();
+            this.map.panInsideBounds(bounds);
+        }
     }
     updateBuses() {
         if ( 0 == this.selectedLines.length ) {
