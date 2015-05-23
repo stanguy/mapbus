@@ -1,0 +1,15 @@
+
+.search.leaflet-bar {
+    input {
+        position: absolute;
+        top: 0;
+        left: 2rem;
+        height: 26px;
+        width: 15rem;
+        line-height: 26px;
+        padding: 0.1rem 0.5rem;
+        opacity: 0.9;
+        display: none;
+    }
+    &.active input { display: block; }
+}
