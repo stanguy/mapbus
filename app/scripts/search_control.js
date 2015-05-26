@@ -43,6 +43,13 @@ let SearchControl = L.Control.extend({
         if ( null == this.cb ) { return; }
         if ( -1 != this.timeout ) {
             clearTimeout(this.timeout);
+            this.timeout = -1;
+        }
+        if ( 27 == e.keyCode ) {
+            this.cb();
+            this.input.value = "";
+            this._toggleActivate();
+            return;
         }
         this.timeout = setTimeout(
             () => {
@@ -58,6 +65,7 @@ let SearchControl = L.Control.extend({
             L.DomUtil.removeClass(container,"active");
         } else {
             L.DomUtil.addClass(container,"active");
+            this.input.focus();
         }
     }
 });

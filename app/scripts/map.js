@@ -104,7 +104,7 @@ class MapHandler {
 
     search(kw) {
         let filter = null;
-        if ( "" != kw ) {
+        if ( null != kw && "" != kw ) {
             const subset = this.idx.search(kw).map( r => r.ref );
             const subset_match = {};
             for(let i = 0; i < subset.length; ++i ) {
