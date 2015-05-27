@@ -12,12 +12,12 @@
     "foundation": "zurb/bower-foundation#~5.4.7",
     "bourbon": "~4.2.0",
     "leaflet": "~0.7.3",
-    "sidebar-v2": "~0.2.1",
     "leaflet-providers": "~1.0.16",
     "leaflet.markerclusterer": "~0.4.0",
     "Leaflet.encoded": "~0.0.5",
     "Leaflet.awesome-markers": "~2.0.2",
-    "lunr.js": "~0.5.9"
+    "lunr.js": "~0.5.9",
+    "sidebar-v2": "git@github.com:stanguy/sidebar-v2.git#gh-pages"
   },
   "overrides": {
     "foundation": {
