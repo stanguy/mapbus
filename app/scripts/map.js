@@ -1,4 +1,10 @@
 
+import {KeolisApi} from 'scripts/api';
+import {ExploreApi} from 'scripts/explore_api';
+import {Sidebar} from 'scripts/sidebar';
+import {SearchControl} from 'scripts/search_control';
+import getCachedData from 'scripts/datacache';
+
 const AUTOMATIC_REFRESH_DELAY = 40 * 1000;
 
 Number.prototype.zeroPadded = function() {
@@ -9,7 +15,7 @@ Number.prototype.zeroPadded = function() {
     return prefix + this;
 };
 
-class MapHandler {
+export class MapHandler {
     constructor() {
         L.Icon.Default.imagePath = "/images/";
         L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
@@ -49,9 +55,9 @@ class MapHandler {
 	    subdomains: '1234'
         });
         layer.addTo(this.map);
-        const searchcontrol = new SearchControl();
-        this.map.addControl(searchcontrol);
-        searchcontrol.setCallback( x => this.search(x) );
+        this.searchControl = new SearchControl();
+        this.map.addControl(this.searchControl);
+        this.searchControl.setCallback( x => this.search(x) );
 
         getCachedData( data => {
             this.stops = data.Stops;

@@ -1,20 +1,8 @@
 exports.config =
   # See http://brunch.io/#documentation for docs.
   modules:
-  	definition: false
-  	wrapper: (path,data) ->
-        if m = path.match /templates\/(.*).hbs/
-            return """
-;window.AppTemplates = window.AppTemplates || {};
-window.AppTemplates['#{m[1]}'] = function(){
-    var m = { exports: true };
-    (function(module){
-        #{data}
-    })(m);
-    return m.exports;
-}();
-            """
-        return data
+  	definition: "commonjs"
+  	wrapper: "commonjs"
 
   sourceMaps: true
 
@@ -43,11 +31,9 @@ window.AppTemplates['#{m[1]}'] = function(){
         includePaths: [
           'bower_components/bourbon/app/assets/stylesheets'
         ]
-    ES6to5:
-        whitelist: []
+    babel:
         compact: false
-        format:
-            semicolons: false
+        modules: "common"
         ignore: [
             /^(bower_components|vendor)/
         ]

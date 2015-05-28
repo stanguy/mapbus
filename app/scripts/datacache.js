@@ -9,7 +9,7 @@ function _reallyGetData( cb ) {
     });    
 }
 
-function getCachedData( cb ) {
+export default function getCachedData( cb ) {
     const stored = localStorage.getItem("data");
     const stored_ts = parseInt( localStorage.getItem("data_timestamp") );
     if ( undefined != stored && undefined != stored_ts ) {

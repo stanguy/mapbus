@@ -1,10 +1,10 @@
 
-class Sidebar {
+export class Sidebar {
     constructor(map) {
         const sidebar = L.control.sidebar('sidebar').addTo(map);
     }
     setContent( id, value, switchTo = false ) {
-        let t = AppTemplates[id];
+        const t = require('templates/' + id);
         const txt_value = t(value);
         $(`#${id}`).html(txt_value);
         if ( txt_value.trim().length > 0 ) {

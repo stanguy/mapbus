@@ -2,7 +2,7 @@
 const MAX_STOPS_PER_CALL = 10;
 const KEOLIS_JSON_BASE_URL = 'http://data.keolis-rennes.com/json/';
 
-class KeolisApi {
+export class KeolisApi {
     
     constructor(key) {
         this.key = key;

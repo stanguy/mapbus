@@ -1,16 +1,25 @@
-let SearchControl = L.Control.extend({
+import ToggleControl from 'scripts/toggle_control';
+
+export var SearchControl = ToggleControl.extend({
     options: {
-        position: 'topleft'
+        position: 'topleft',
+        content: '<i class="fa fa-search"></i>',
+        class: 'search'
     },
     initialize: function (options) {
-        L.setOptions(this, options);
+        ToggleControl.prototype.initialize.call(this,options);
         this.cb = null;
         this.timeout = -1;
     },
     
     onAdd: function(map) {
-        const container = L.DomUtil.create('div', 'search leaflet-bar');
-        this.button = this._createButton(container);
+        const container = ToggleControl.prototype.onAdd.call( this, map );
+
+        this.input = L.DomUtil.create( 'input', "", container );
+        this.input.type = "text";
+        L.DomEvent.
+            on( this.input, 'keydown', this._keydown, this )
+        ;
         return container;
     },
 
@@ -18,27 +27,6 @@ let SearchControl = L.Control.extend({
         this.cb = cb;
     },
     
-    _createButton: function(container) {
-        const link = L.DomUtil.create('a',"",container);
-        link.innerHTML = '<i class="fa fa-search"></i>';
-        link.href = '#';
-
-        const stop = L.DomEvent.stopPropagation;
-        L.DomEvent
-            .on(link, 'click', stop)
-            .on(link, 'mousedown', stop)
-            .on(link, 'dblclick', stop)
-            .on(link, 'click', L.DomEvent.preventDefault)
-            .on(link, 'click', this._toggleActivate, this );
-
-        this.input = L.DomUtil.create( 'input', "", container );
-        this.input.type = "text";
-        L.DomEvent.
-            on( this.input, 'keydown', this._keydown, this )
-        ;
-        
-        return link;
-    },
     _keydown: function(e) {
         if ( null == this.cb ) { return; }
         if ( -1 != this.timeout ) {
@@ -58,14 +46,5 @@ let SearchControl = L.Control.extend({
             },
             50
         );
-    },
-    _toggleActivate: function(e) {
-        const container = this.getContainer();
-        if ( L.DomUtil.hasClass(container,"active") ) {
-            L.DomUtil.removeClass(container,"active");
-        } else {
-            L.DomUtil.addClass(container,"active");
-            this.input.focus();
-        }
     }
 });

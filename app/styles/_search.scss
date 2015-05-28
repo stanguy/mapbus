@@ -12,4 +12,7 @@
         display: none;
     }
     &.active input { display: block; }
+    &.disabled, &.disabled a {
+        color: #ddd;
+    }
 }

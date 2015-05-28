@@ -1,7 +1,7 @@
 
 const DATA_EXPLORE_BASE_URL = "https://data.explore.star.fr/api/records/1.0/search";
 
-class ExploreApi {
+export class ExploreApi {
 
     getRealtimePositionsSingle(shortname) {
         const params = {
