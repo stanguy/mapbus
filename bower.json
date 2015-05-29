@@ -17,7 +17,8 @@
     "Leaflet.encoded": "~0.0.5",
     "Leaflet.awesome-markers": "~2.0.2",
     "lunr.js": "~0.5.9",
-    "sidebar-v2": "git@github.com:stanguy/sidebar-v2.git#gh-pages"
+    "sidebar-v2": "git@github.com:stanguy/sidebar-v2.git#gh-pages",
+    "lie": "~2.9.1"
   },
   "overrides": {
     "foundation": {
@@ -47,6 +48,11 @@
         "dist/images/marker-icon.png",
         "dist/images/marker-shadow.png"
       ]
-    }
+    },
+      "lie": {
+          "main": [
+              "dist/lie.polyfill.min.js"
+          ]
+      }
   }
 }
