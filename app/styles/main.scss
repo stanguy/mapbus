@@ -32,3 +32,10 @@ html, body {
         background-color: #448;
     }
 }
+
+.leaflet-control.bus-scale {
+    div {
+        height: 1.5rem;
+        width: 1.5rem;
+    }
+}

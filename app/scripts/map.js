@@ -4,7 +4,7 @@ import {ExploreApi} from 'scripts/explore_api';
 import {Sidebar} from 'scripts/sidebar';
 import {ToggleControl} from 'scripts/toggle_control';
 import {SearchControl} from 'scripts/search_control';
-import {Cluster,BusCluster} from 'scripts/cluster';
+import {Cluster,BusCluster,ScaleControl} from 'scripts/cluster';
 import getCachedData from 'scripts/datacache';
 
 const AUTOMATIC_REFRESH_DELAY = 40 * 1000;
@@ -70,6 +70,8 @@ export class MapHandler {
             this.hiddenStops = false;
             this.updateBuses();
         };
+        const scale = new ScaleControl();
+        this.map.addControl(scale);
 
         getCachedData( data => {
             this.stops = data.Stops;

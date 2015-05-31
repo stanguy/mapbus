@@ -150,3 +150,29 @@ export const BusCluster = Cluster.extend({
         PruneClusterForLeaflet.prototype.RegisterMarker.call(this,marker);
     }
 });
+
+export const ScaleControl = L.Control.extend({
+    options: {
+        position: 'topright'
+    },
+    onAdd: function(map) {
+        const container = L.DomUtil.create('div','bus-scale');
+        const labels = [
+            'À l\'heure', // green
+            'Gros retard', // darkblue
+            'Léger retard', // lightblue
+            'Grosse avance', // red
+            'Légère avance' // orange
+        ];
+        const myorder = [
+            1, 2, 0, 4, 3
+        ];
+        const top = labels.length;
+        for( let i = 0; i < top; ++i ) {
+            const elem = L.DomUtil.create('div', '', container );
+            elem.style.backgroundColor = colors[myorder[i]];
+            elem.title = labels[myorder[i]];
+        }
+        return container;
+    }
+});
