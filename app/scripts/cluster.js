@@ -1,4 +1,10 @@
-var colors = ['green', /*'darkpurple'*/ '#301934', 'blue', 'red', 'orange'], pi2 = Math.PI * 2;
+var colors = [
+    'rgb(115,175,15)', // green
+    'rgb(0,100,160)', // darkblue
+    'rgb(130,220,255)', // lightblue
+    'rgb(255,0,0)', // red
+    'rgb(250,150,40)' // orange
+], pi2 = Math.PI * 2;
 
 // this is from the categories example
 L.Icon.MarkerCluster = L.Icon.extend({
@@ -94,7 +100,7 @@ export const BusCluster = Cluster.extend({
             fn: ecartsecondes => ecartsecondes > 300,
             icon: L.AwesomeMarkers.icon({
                 icon: 'bus',
-                markerColor: 'darkpurple',
+                markerColor: 'darkblue',
                 prefix: "fa"
             })
         },
@@ -102,7 +108,7 @@ export const BusCluster = Cluster.extend({
             fn: ecartsecondes =>  ecartsecondes > 0,
             icon: L.AwesomeMarkers.icon({
                 icon: 'bus',
-                markerColor: 'blue',
+                markerColor: 'lightblue',
                 prefix: "fa"
             })
         },
