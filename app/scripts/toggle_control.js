@@ -29,13 +29,14 @@ export const ToggleControl = L.Control.extend({
 
         return link;
     },
+    _onActivate: function() {},
     _toggleActivate: function(e) {
         const container = this.getContainer();
         if ( L.DomUtil.hasClass(container,"active") ) {
             L.DomUtil.removeClass(container,"active");
         } else if ( ! L.DomUtil.hasClass(container,"disabled")){
             L.DomUtil.addClass(container,"active");
-            this.input.focus();
+            this._onActivate();
         }
     },
     enable: function(b) {

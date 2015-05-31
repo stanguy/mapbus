@@ -23,6 +23,10 @@ export const SearchControl = ToggleControl.extend({
         return container;
     },
 
+    _onActivate: function() {
+        this.input.focus();
+    },
+    
     setCallback: function(cb) {
         this.cb = cb;
     },
