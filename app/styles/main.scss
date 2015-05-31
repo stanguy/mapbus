@@ -25,3 +25,10 @@ html, body {
 }
 
 .sidebar-tabs li a { font-size: 1.5rem; }
+
+.leaflet-control.toggle.active {
+    a {
+        color: white;
+        background-color: #448;
+    }
+}

@@ -2,6 +2,7 @@
 import {KeolisApi} from 'scripts/api';
 import {ExploreApi} from 'scripts/explore_api';
 import {Sidebar} from 'scripts/sidebar';
+import {ToggleControl} from 'scripts/toggle_control';
 import {SearchControl} from 'scripts/search_control';
 import {Cluster,BusCluster} from 'scripts/cluster';
 import getCachedData from 'scripts/datacache';
@@ -23,6 +24,7 @@ export class MapHandler {
 
         this.api = new KeolisApi($('body').data('keolis-key'));
         this.explore = new ExploreApi();
+        this.hiddenStops = false;
         this.selectedLines = [];
         this.selectedStop = null;
         this.selectedBus = null;
@@ -51,6 +53,23 @@ export class MapHandler {
         this.searchControl = new SearchControl();
         this.map.addControl(this.searchControl);
         this.searchControl.setCallback( x => this.search(x) );
+
+        const bus_explore = new ToggleControl({
+            content: '<i class="fa fa-bus"></i>'
+        });
+        this.map.addControl(bus_explore);
+        bus_explore._onActivate = () =>{
+            this.map.removeLayer(this.markers);
+            this.searchControl.enable(false);
+            this.hiddenStops = true;
+            this.updateBuses();
+        };
+        bus_explore._onDeactivate = () => {
+            this.map.addLayer(this.markers);
+            this.searchControl.enable(true);
+            this.hiddenStops = false;
+            this.updateBuses();
+        };
 
         getCachedData( data => {
             this.stops = data.Stops;
@@ -243,26 +262,31 @@ export class MapHandler {
                 this.markers.RegisterMarker(marker);
             }
         }
-        this.map.addLayer(this.markers);
-        if ( this.markers.Cluster.GetPopulation() > 0 ) {
+        if ( this.markers.Cluster.GetPopulation() > 0 && ! this.hiddenStops ) {
             this.markers.FitBounds();
         }
         this.markers.RedrawIcons();
     }
     updateBuses() {
-        if ( 0 == this.selectedLines.length ) {
+        if ( 0 == this.selectedLines.length && ! this.hiddenStops ) {
             this.busMarkers.RemoveMarkers();
+            this.busMarkers.ProcessView();
             return;
+        } else if ( 0 == this.selectedLines.length ) {
+            this.explore.getAllRealtimePositions().
+                then( bus => this.refreshBuses(bus) ).
+                catch(console.log.bind(console));
+        } else {
+            const short_names = $.map(
+                this.selectedLines,
+                (line) => line.Name
+            );
+            this.explore.getRealtimePositions(short_names).
+                then( bus => {
+                    this.refreshBuses(bus);
+                }).
+                catch(console.log.bind(console));
         }
-        const short_names = $.map(
-            this.selectedLines,
-            (line) => line.Name
-        );
-        this.explore.getRealtimePositions(short_names).
-            then( bus => {
-                this.refreshBuses(bus);
-            });
-
     }
     updateBusDetail(interactive=false) {
         this.sidebar.setContent( 'bus', { bus: this.selectedBus }, interactive );
@@ -296,5 +320,6 @@ export class MapHandler {
         }
         this.updateBusDetail();
         this.map.addLayer(this.busMarkers);
+        this.busMarkers.ProcessView();
     }
 }

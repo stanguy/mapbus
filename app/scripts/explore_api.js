@@ -3,20 +3,28 @@ const DATA_EXPLORE_BASE_URL = "https://data.explore.star.fr/api/records/1.0/sear
 
 export class ExploreApi {
 
-    getRealtimePositionsSingle(shortname) {
-        const params = {
+
+    callApi(params) {
+        const base_params = {
             dataset: "tco-bus-vehicules-position-tr",
             rows: 1000,
-            'refine.etat': "En ligne",
-            'refine.nomcourtligne': shortname
+            'refine.etat': "En ligne"
         };
+        const final_params = $.extend( {}, base_params, params );
         return new Promise((resolve,reject) => {
-            $.ajax( DATA_EXPLORE_BASE_URL, { data: params } )
+            $.ajax( DATA_EXPLORE_BASE_URL, { data: final_params } )
                 .done( data => {
                     resolve(data.records);
                 })
                 .fail(reject);
-        });
+        });        
+    }
+    
+    getRealtimePositionsSingle(shortname) {
+        return this.callApi( {'refine.nomcourtligne': shortname} );
+    }
+    getAllRealtimePositions() {
+        return this.callApi({});
     }
     getRealtimePositions(shortnames) {
         const current = shortnames.pop();

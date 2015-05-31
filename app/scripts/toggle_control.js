@@ -30,10 +30,12 @@ export const ToggleControl = L.Control.extend({
         return link;
     },
     _onActivate: function() {},
+    _onDeactivate: function() {},
     _toggleActivate: function(e) {
         const container = this.getContainer();
         if ( L.DomUtil.hasClass(container,"active") ) {
             L.DomUtil.removeClass(container,"active");
+            this._onDeactivate();
         } else if ( ! L.DomUtil.hasClass(container,"disabled")){
             L.DomUtil.addClass(container,"active");
             this._onActivate();
