@@ -41,8 +41,8 @@ export const ToggleControl = L.Control.extend({
     },
     enable: function(b) {
         const container = this.getContainer();
-        if ( b ) { container.removeClass("disabled"); }
-        else { container.addClass("disabled"); }
+        if ( b ) { L.DomUtil.removeClass(container,"disabled"); }
+        else { L.DomUtil.addClass(container,"disabled"); }
     }
     
 });
