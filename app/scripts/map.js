@@ -3,6 +3,7 @@ import {KeolisApi} from 'scripts/api';
 import {ExploreApi} from 'scripts/explore_api';
 import {Sidebar} from 'scripts/sidebar';
 import {SearchControl} from 'scripts/search_control';
+import {Cluster,BusCluster} from 'scripts/cluster';
 import getCachedData from 'scripts/datacache';
 
 const AUTOMATIC_REFRESH_DELAY = 40 * 1000;
@@ -32,17 +33,9 @@ export class MapHandler {
         this.linesCache = {};
         this.map.setView([48.11, -1.65], 12);
         
-        this.markers = L.markerClusterGroup({
-            disableClusteringAtZoom: 16
-        });
-        this.busMarkers = L.markerClusterGroup({
-            disableClusteringAtZoom: 12,
-            iconCreateFunction: (cluster) =>  {
-                const icon = this.busMarkers._defaultIconCreateFunction(cluster);
-                icon.options.className += " bus";
-                return icon;
-            }
-        });
+        this.markers = new Cluster();
+        this.map.addLayer(this.markers);
+        this.busMarkers = new BusCluster();
         this.sidebar = new Sidebar(this.map);
         this.timeout = setInterval(
             () => this.timerExpires(),
@@ -234,31 +227,31 @@ export class MapHandler {
         if ( undefined == filter ) {
             filter = () => true;
         }
-        this.markers.clearLayers();
+        this.markers.RemoveMarkers();
         const total_stops = this.stops.length;
         const stop_markers = [];
         for ( let i = 0; i < total_stops; ++i ) {
             const stop = this.stops[i];
             if ( filter(stop) ) {
-                const marker = L.marker( new L.LatLng( stop.Pos[1], stop.Pos[0] ),
-                                       { title: stop.Name });
-                marker.stop = stop;
-                marker.on( 'click', e => {
+                const marker = new PruneCluster.Marker( stop.Pos[1], stop.Pos[0],
+                                                        { title: stop.Name });
+                marker.data.stop = stop;
+                marker.data.callback = e => {
                     this.markerClick(e.target);
-                });
+                };
                 stop_markers.push( marker );
+                this.markers.RegisterMarker(marker);
             }
         }
-        this.markers.addLayers( stop_markers );
         this.map.addLayer(this.markers);
-        if ( this.markers.hasLayer() ) {
-            const bounds = this.markers.getBounds();
-            this.map.panInsideBounds(bounds);
+        if ( this.markers.Cluster.GetPopulation() > 0 ) {
+            this.markers.FitBounds();
         }
+        this.markers.RedrawIcons();
     }
     updateBuses() {
         if ( 0 == this.selectedLines.length ) {
-            this.busMarkers.clearLayers();
+            this.busMarkers.RemoveMarkers();
             return;
         }
         const short_names = $.map(
@@ -275,31 +268,9 @@ export class MapHandler {
         this.sidebar.setContent( 'bus', { bus: this.selectedBus }, interactive );
     }
     refreshBuses(buses) {
-        this.busMarkers.clearLayers();
+        this.busMarkers.RemoveMarkers();
         const bus_markers = [];
         const total_buses = buses.length;
-        const busIcon = {
-            solate: L.AwesomeMarkers.icon({
-                icon: 'bus',
-                markerColor: 'darkpurple'
-            }),
-            late: L.AwesomeMarkers.icon({
-                icon: 'bus',
-                markerColor: 'blue'
-            }),
-            ontime: L.AwesomeMarkers.icon({
-                icon: 'bus',
-                markerColor: 'green'
-            }),
-            soveryearly: L.AwesomeMarkers.icon({
-                icon: 'bus',
-                markerColor: 'red'
-            }),
-            early: L.AwesomeMarkers.icon({
-                icon: 'bus',
-                markerColor: 'orange'
-            })
-        };
         let new_selected_bus = null;
         for( let i = 0; i < total_buses; ++i ) {
             const bus = buses[i];
@@ -309,26 +280,14 @@ export class MapHandler {
                 new_selected_bus = bus;
             }
             
-            let icon = null;
-            if ( Math.abs( bus.fields.ecartsecondes ) < 50 ) {
-                icon = busIcon.ontime;
-            } else if ( bus.fields.ecartsecondes > 300 ) {
-                icon = busIcon.solate;
-            } else if ( bus.fields.ecartsecondes > 0 ) {
-                icon = busIcon.late;
-            } else if ( bus.fields.ecartsecondes < -300 ){
-                icon = busIcon.soveryearly;
-            } else {
-                icon = busIcon.early;
-            }
-            
-            const marker = L.marker( new L.LatLng( coords[1], coords[0] ),
-                                     { icon: icon } );
-            marker.bus = bus;
-            marker.on( 'click', e => {
+            const marker = new PruneCluster.Marker( coords[1], coords[0] );
+            marker.data.bus = bus;
+            marker.data.ecartsecondes = bus.fields.ecartsecondes;
+            marker.data.callback = e => {
                 this.busMarkerClick( e.target.bus );
-            });
+            };
             bus_markers.push(marker);
+            this.busMarkers.RegisterMarker(marker);
         }
         if ( new_selected_bus ) {
             this.selectedBus = new_selected_bus;
@@ -336,7 +295,6 @@ export class MapHandler {
             this.selectedBus = null;
         }
         this.updateBusDetail();
-        this.busMarkers.addLayers( bus_markers );
         this.map.addLayer(this.busMarkers);
     }
 }
