@@ -1,6 +1,5 @@
 
-let ToggleControl;
-export default ToggleControl = L.Control.extend({
+export const ToggleControl = L.Control.extend({
     options: {
         position: 'topleft',
         class: 'toggle',

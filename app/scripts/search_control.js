@@ -1,6 +1,6 @@
-import ToggleControl from 'scripts/toggle_control';
+import {ToggleControl} from 'scripts/toggle_control';
 
-export var SearchControl = ToggleControl.extend({
+export const SearchControl = ToggleControl.extend({
     options: {
         position: 'topleft',
         content: '<i class="fa fa-search"></i>',
