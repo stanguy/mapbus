@@ -99,7 +99,7 @@ export class MapHandler {
                     line.img = pictos_by_name[line.Name];
                 }
                 this.sidebar.setContent('lines', {lines: this.lines});
-            });
+            }).catch(console.log.bind(console));
 
         Handlebars.registerHelper( 'date_to_time', (dt) => {
             const d = new Date(dt);
@@ -190,7 +190,7 @@ export class MapHandler {
             }
 
             this.sidebar.setContent( "times", { stopline: data, stop: this.selectedStop.Name}, interactive );
-        });
+        }).catch(console.log.bind(console));
     }
 
     getSelectedLinesIndex() {
