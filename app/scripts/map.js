@@ -291,16 +291,25 @@ export class MapHandler {
         }
     }
     updateBusDetail(interactive=false) {
-        let since,u;
+        let since,u_s = "s",ecart,u_e = "s";
         if ( null != this.selectedBus ) {
-            since = Math.floor((Date.now() - Date.parse(this.selectedBus.record_timestamp))/1000);
-            u = "s";
+            const bus = this.selectedBus;
+            since = Math.floor((Date.now() - Date.parse(bus.record_timestamp))/1000);
             if ( since > 60 ) {
                 since = Math.round(since / 60);
-                u = "min";
+                u_s = "min";
+            }
+            ecart = bus.fields.ecartsecondes;
+            if ( Math.abs(ecart) > 90 ) {
+                ecart = Math.round(ecart/60);
+                u_e = "min";
             }
         }
-        this.sidebar.setContent( 'bus', { bus: this.selectedBus, since: since, unit: u }, interactive );
+        this.sidebar.setContent( 'bus', {
+            bus: this.selectedBus,
+            ecart: ecart, unit_ecart: u_e,
+            since: since, unit_since: u_s
+        }, interactive );
     }
     refreshBuses(buses) {
         this.busMarkers.RemoveMarkers();
