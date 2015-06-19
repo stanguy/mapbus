@@ -40,7 +40,7 @@ export class MapHandler {
         this.busMarkers = new BusCluster();
         this.sidebar = new Sidebar(this.map);
         this.timeout = setInterval(
-            () => this.timerExpires(),
+            this.timerExpires.bind(this),
             AUTOMATIC_REFRESH_DELAY
         );
 
@@ -52,7 +52,7 @@ export class MapHandler {
         layer.addTo(this.map);
         this.searchControl = new SearchControl();
         this.map.addControl(this.searchControl);
-        this.searchControl.setCallback( x => this.search(x) );
+        this.searchControl.setCallback( this.search.bind(this) );
 
         const bus_explore = new ToggleControl({
             content: '<i class="fa fa-bus"></i>'
@@ -119,7 +119,7 @@ export class MapHandler {
             return id;
         });
 
-        $(document.body).on( 'click', '.lines a', e => this.lineClick(e) );
+        $(document.body).on( 'click', '.lines a', this.lineClick.bind(this));
     }
 
     search(kw) {
@@ -276,7 +276,7 @@ export class MapHandler {
             return;
         } else if ( 0 == this.selectedLines.length ) {
             this.explore.getAllRealtimePositions().
-                then( bus => this.refreshBuses(bus) ).
+                then( this.refreshBuses.bind(this)).
                 catch(console.log.bind(console));
         } else {
             const short_names = $.map(
@@ -284,9 +284,7 @@ export class MapHandler {
                 (line) => line.Name
             );
             this.explore.getRealtimePositions(short_names).
-                then( bus => {
-                    this.refreshBuses(bus);
-                }).
+                then(  this.refreshBuses.bind(this) ).
                 catch(console.log.bind(console));
         }
     }
