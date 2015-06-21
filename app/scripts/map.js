@@ -73,23 +73,24 @@ export class MapHandler {
         const scale = new ScaleControl();
         this.map.addControl(scale);
 
-        getCachedData( data => {
-            this.stops = data.Stops;
-            this.lines = data.Routes;
-            this.refreshStops();
+        getCachedData()
+            .then( data => {
+                this.stops = data.Stops;
+                this.lines = data.Routes;
+                this.refreshStops();
+                
+                this.idx = lunr(function(){
+                    this.field( 'Name' ); 
+                });
+                const total_stops = this.stops.length;
+                for( let i = 0 ; i < total_stops; ++i ) {
+                    const stop = this.stops[i];
+                    stop.id = i;
+                    this.idx.add(stop);
+                }
+                return this.api.getLines();
 
-            this.idx = lunr(function(){
-                this.field( 'Name' ); 
-            });
-            const total_stops = this.stops.length;
-            for( let i = 0 ; i < total_stops; ++i ) {
-                const stop = this.stops[i];
-                stop.id = i;
-                this.idx.add(stop);
-            }
-        });
-
-        this.api.getLines()
+            })
             .then( lines => {
                 const pictos_by_name = {};
                 for ( let i = 0; i < lines.length; ++i ) {
