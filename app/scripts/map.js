@@ -36,8 +36,10 @@ export class MapHandler {
         this.map.setView([48.11, -1.65], 12);
         
         this.markers = new Cluster();
+        this.markers.Cluster.Size = 190;
         this.map.addLayer(this.markers);
         this.busMarkers = new BusCluster();
+        this.busMarkers.Cluster.Size = 190;
         this.sidebar = new Sidebar(this.map);
         this.timeout = setInterval(
             this.timerExpires.bind(this),
