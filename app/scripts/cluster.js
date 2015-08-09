@@ -89,7 +89,7 @@ export const Cluster = PruneClusterForLeaflet.extend({
 export const BusCluster = Cluster.extend({
     possibleIcons: [
         {
-            fn: ecartsecondes =>  Math.abs( ecartsecondes ) < 50,
+            fn: ecartsecondes =>  ecartsecondes < (3*60) && ecartsecondes > -60,
             icon: L.AwesomeMarkers.icon({
                 icon: 'bus',
                 markerColor: 'green',
@@ -97,7 +97,7 @@ export const BusCluster = Cluster.extend({
             })
         },
         {
-            fn: ecartsecondes => ecartsecondes > 300,
+            fn: ecartsecondes => ecartsecondes > (4*60),
             icon: L.AwesomeMarkers.icon({
                 icon: 'bus',
                 markerColor: 'darkblue',
@@ -113,7 +113,7 @@ export const BusCluster = Cluster.extend({
             })
         },
         {
-            fn: ecartsecondes => ecartsecondes < -300,
+            fn: ecartsecondes => ecartsecondes < -(2*60),
             icon: L.AwesomeMarkers.icon({
                 icon: 'bus',
                 markerColor: 'red',
