@@ -75,12 +75,13 @@ export class MapHandler {
         const scale = new ScaleControl();
         this.map.addControl(scale);
 
-        getCachedData()
+        Promise.all([getCachedData(),this.api.getLines()])
             .then( data => {
-                this.stops = data.Stops;
-                this.lines = data.Routes;
+                const [ network_data, lines ] = data;
+                this.stops = network_data.Stops;
+                this.lines = network_data.Routes;
                 this.refreshStops();
-                
+
                 this.idx = lunr(function(){
                     this.field( 'Name' ); 
                 });
@@ -90,10 +91,6 @@ export class MapHandler {
                     stop.id = i;
                     this.idx.add(stop);
                 }
-                return this.api.getLines();
-
-            })
-            .then( lines => {
                 const pictos_by_name = {};
                 for ( let i = 0; i < lines.length; ++i ) {
                     const line = lines[i];
