@@ -75,7 +75,7 @@ export class MapHandler {
         const scale = new ScaleControl();
         this.map.addControl(scale);
 
-        Promise.all([getCachedData(),this.api.getLines()])
+        Promise.all([getCachedData(),this.explore.getLines()])
             .then( data => {
                 const [ network_data, lines ] = data;
                 this.stops = network_data.Stops;

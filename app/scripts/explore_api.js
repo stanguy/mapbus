@@ -3,13 +3,7 @@ const DATA_EXPLORE_BASE_URL = "https://data.explore.star.fr/api/records/1.0/sear
 
 export class ExploreApi {
 
-
-    callApi(params) {
-        const base_params = {
-            dataset: "tco-bus-vehicules-position-tr",
-            rows: 1000,
-            'refine.etat': "En ligne"
-        };
+    callApi(base_params,params){
         const final_params = $.extend( {}, base_params, params );
         return new Promise((resolve,reject) => {
             $.ajax( DATA_EXPLORE_BASE_URL, { data: final_params } )
@@ -17,14 +11,23 @@ export class ExploreApi {
                     resolve(data.records);
                 })
                 .fail(reject);
-        });        
+        });                
+    }
+    
+    callPositionApi(params) {
+        const base_params = {
+            dataset: "tco-bus-vehicules-position-tr",
+            rows: 1000,
+            'refine.etat': "En ligne"
+        };
+        return this.callApi( base_params, params );
     }
     
     getRealtimePositionsSingle(shortname) {
-        return this.callApi( {'refine.nomcourtligne': shortname} );
+        return this.callPositionApi( {'refine.nomcourtligne': shortname} );
     }
     getAllRealtimePositions() {
-        return this.callApi({});
+        return this.callPositionApi({});
     }
     getRealtimePositions(shortnames) {
         const current = shortnames.pop();
@@ -39,6 +42,24 @@ export class ExploreApi {
                     } else {
                         resolve(records);
                     }
+                }, reject );
+        });
+    }
+    getLines() {
+        const params = {
+            dataset: "tco-bus-lignes-pictogrammes-dm",
+            rows: 1000,
+            'refine.resolution': '1:100'
+        };
+        return new Promise( (resolve,reject) => {
+            this.callApi( params, {})
+                .then( records => {
+                    resolve( records.map( entry => {
+                        return {
+                            name: entry.fields.nomcourtligne,
+                            img: `https://data.explore.star.fr/explore/dataset/tco-bus-lignes-pictogrammes-dm/files/${entry.fields.image.id}/download/`
+                        };
+                    }) );
                 }, reject );
         });
     }
