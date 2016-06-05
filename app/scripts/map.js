@@ -1,5 +1,4 @@
 
-import {KeolisApi} from 'scripts/api';
 import {ExploreApi} from 'scripts/explore_api';
 import {Sidebar} from 'scripts/sidebar';
 import {ToggleControl} from 'scripts/toggle_control';
@@ -22,7 +21,6 @@ export class MapHandler {
         L.Icon.Default.imagePath = "/images/";
         L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
 
-        this.api = new KeolisApi($('body').data('keolis-key'));
         this.explore = new ExploreApi();
         this.hiddenStops = false;
         this.selectedLines = [];
@@ -171,7 +169,7 @@ export class MapHandler {
         for( let i = 0; i < members.length; ++i) {
             stop_ids.push( members[i].Id );
         }
-        this.api.getNextDepartures(stop_ids).then((data) => {
+        this.explore.getNextDepartures(stop_ids).then((data) => {
 
             if ( this.selectedLines.length > 0 ) {
                 const selected_lines_ids = {};
