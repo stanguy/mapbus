@@ -85,7 +85,6 @@ export class ExploreApi {
                     for ( let i = 0; i < records.length ; ++i ) {
                         const idarret = records[i].fields.idarret;
                         const line = records[i].fields.idligne;
-                        console.log(line);
                         if ( undefined === stops[idarret] ) {
                             stops[idarret] = {};
                         }
