@@ -111,7 +111,7 @@ export class ExploreApi {
                             route: pair[1],
                             stop: pair[0],
                             departures: {
-                                departure: stops[pair[0]][pair[1]].departures
+                                departure: stops[pair[0]][pair[1]].departures.sort( (a,b) => Date.parse(a.content) > Date.parse(b.content) )
                             }
                         });
                     }
